@@ -12,6 +12,12 @@ type Service struct {
 	repo *Repository
 }
 
+func NewService(repo *Repository) *Service {
+	return &Service{
+		repo: repo,
+	}
+}
+
 func HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {

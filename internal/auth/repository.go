@@ -33,10 +33,6 @@ func (r *Repository) FindByID(id int64) (*User, error) {
 }
 
 func (r *Repository) Create(user *User) error {
-	_, err := r.db.Exec(`INSERT INTO users (first_name, last_name, email, password_hash, is_active) VALUES ($1, $2, $3, $4, $5)`,
-		user.FirstName, user.LastName, user.Email, user.PasswordHash, user.IsActive)
-	if err != nil {
-		return err
-	}
-	return nil
+	return r.db.QueryRow(`INSERT INTO users (first_name, last_name, email, password_hash, is_active) VALUES ($1, $2, $3, $4, $5)`,
+		user.FirstName, user.LastName, user.Email, user.PasswordHash, user.IsActive).Scan(&user.ID)
 }

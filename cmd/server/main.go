@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/homecloud/go-api/internal/auth"
 	"github.com/homecloud/go-api/internal/config"
 	"github.com/homecloud/go-api/internal/database"
 	"github.com/homecloud/go-api/internal/health"
@@ -21,6 +22,13 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", health.HealthHandler)
+	repo := auth.NewRepository(db)
+
+	service := auth.NewService(repo)
+
+	handler := auth.NewHandler(service)
+
+	mux.HandleFunc("/auth/signup", handler.SignupHandler)
 
 	addr := ":8080"
 	log.Printf("starting server on %s", addr)

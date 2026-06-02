@@ -1,5 +1,7 @@
 package auth
 
+import "time"
+
 type User struct {
 	ID           int64
 	FirstName    string
@@ -7,4 +9,6 @@ type User struct {
 	Email        string
 	PasswordHash string
 	IsActive     bool
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
