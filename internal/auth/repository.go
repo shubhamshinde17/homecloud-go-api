@@ -1,6 +1,9 @@
 package auth
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
 
 type Repository struct {
 	db *sql.DB
@@ -17,6 +20,9 @@ func (r *Repository) FindByEmail(email string) (*User, error) {
 	user := &User{}
 	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.PasswordHash, &user.IsActive)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
 	return user, nil
@@ -27,6 +33,9 @@ func (r *Repository) FindByID(id int64) (*User, error) {
 	user := &User{}
 	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email, &user.PasswordHash, &user.IsActive)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
 	return user, nil

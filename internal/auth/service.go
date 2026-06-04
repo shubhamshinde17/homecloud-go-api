@@ -7,6 +7,7 @@ import (
 )
 
 var ErrEmailAlreadyExists = errors.New("EMAIL_ALREADY_EXISTS")
+var ErrUserNotFound = errors.New("USER_NOT_FOUND")
 
 type Service struct {
 	repo *Repository
@@ -31,10 +32,8 @@ func (s *Service) Signup(req *SignupRequest) (*User, error) {
 	if err == nil && existingUser != nil {
 		return nil, ErrEmailAlreadyExists
 	}
+
 	passwordHash, err := HashPassword(req.Password)
-	if err != nil {
-		return nil, err
-	}
 
 	user := &User{
 		FirstName:    req.FirstName,
@@ -44,8 +43,8 @@ func (s *Service) Signup(req *SignupRequest) (*User, error) {
 		IsActive:     true,
 	}
 	err = s.repo.Create(user)
-	if err != nil {
+	if err != nil && !errors.Is(err, ErrUserNotFound) {
 		return nil, err
 	}
-	return user, err
+	return user, nil
 }
