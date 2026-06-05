@@ -70,10 +70,11 @@ func (h *Handler) SignupHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	mappedUser := MapUserToResponse(user)
 	json.NewEncoder(w).Encode(common.NewResponse(
 		true,
 		"User created successfully",
-		user,
+		mappedUser,
 		nil,
 	))
 }

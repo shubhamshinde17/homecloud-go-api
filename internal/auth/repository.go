@@ -42,6 +42,7 @@ func (r *Repository) FindByID(id int64) (*User, error) {
 }
 
 func (r *Repository) Create(user *User) error {
-	return r.db.QueryRow(`INSERT INTO users (first_name, last_name, email, password_hash, is_active) VALUES ($1, $2, $3, $4, $5)`,
+	return r.db.QueryRow(`INSERT INTO users (first_name, last_name, email, password_hash, is_active) VALUES ($1, $2, $3, $4, $5)
+	RETURNING id`,
 		user.FirstName, user.LastName, user.Email, user.PasswordHash, user.IsActive).Scan(&user.ID)
 }

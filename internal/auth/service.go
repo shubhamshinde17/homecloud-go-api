@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 
+	"github.com/homecloud/go-api/internal/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,10 +30,11 @@ func HashPassword(password string) (string, error) {
 
 func (s *Service) Signup(req *SignupRequest) (*User, error) {
 	existingUser, err := s.repo.FindByEmail(req.Email)
+
+	logger.Error("Error Found: ", err)
 	if err == nil && existingUser != nil {
 		return nil, ErrEmailAlreadyExists
 	}
-
 	passwordHash, err := HashPassword(req.Password)
 
 	user := &User{
@@ -42,9 +44,20 @@ func (s *Service) Signup(req *SignupRequest) (*User, error) {
 		PasswordHash: passwordHash,
 		IsActive:     true,
 	}
-	err = s.repo.Create(user)
-	if err != nil && !errors.Is(err, ErrUserNotFound) {
-		return nil, err
+	creationErr := s.repo.Create(user)
+	logger.Error("Creation Error: ", creationErr)
+	if creationErr != nil && !errors.Is(creationErr, ErrUserNotFound) {
+		return nil, creationErr
 	}
 	return user, nil
+}
+
+func MapUserToResponse(user *User) *UserResponse {
+	return &UserResponse{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		IsActive:  user.IsActive,
+	}
 }
