@@ -16,11 +16,13 @@ var JWTSecret = config.LoadConfig().JWTSecret
 
 type Service struct {
 	repo *Repository
+	jwt  *jwt.Service
 }
 
 func NewService(repo *Repository) *Service {
 	return &Service{
 		repo: repo,
+		jwt:  jwt.NewService(),
 	}
 }
 
@@ -65,7 +67,7 @@ func (s *Service) Login(req *LoginRequest) (*AccessTokenResponse, error) {
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
-	accessToken, refreshToken, expiresIn, err := jwt.NewService(JWTSecret).GenerateTokens(user.ID, user.Email)
+	accessToken, refreshToken, expiresIn, err := s.jwt.GenerateTokens(user.ID, user.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +95,7 @@ func (s *Service) Login(req *LoginRequest) (*AccessTokenResponse, error) {
 // }
 
 func (s *Service) GetUserByAccessToken(accessToken string) (*User, error) {
-	claims, err := jwt.NewService(JWTSecret).ValidateToken(accessToken)
+	claims, err := jwt.NewService().ValidateToken(accessToken)
 	if err != nil {
 		logger.Error("Token validation error: ", err)
 		return nil, ErrInvalidCredentials
