@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -83,6 +84,10 @@ func (s *Service) GenerateRefreshToken(
 func (s *Service) ValidateToken(
 	tokenString string,
 ) (*Claims, error) {
+	tokenString, err := getTokenFromHeader(tokenString)
+	if err != nil {
+		return nil, err
+	}
 
 	token, err := jwt.ParseWithClaims(
 		tokenString,
@@ -118,4 +123,18 @@ func (s *Service) GenerateTokens(
 		return "", "", 0, err
 	}
 	return accessToken, refreshToken, 15 * 60, nil
+}
+
+func getTokenFromHeader(authHeader string) (string, error) {
+	tokenString := strings.TrimSpace(authHeader)
+	if tokenString == "" {
+		return "", jwt.ErrTokenMalformed
+	}
+	if strings.Contains(tokenString, " ") {
+		parts := strings.SplitN(tokenString, " ", 2)
+		if len(parts) == 2 {
+			tokenString = strings.TrimSpace(parts[1])
+		}
+	}
+	return tokenString, nil
 }

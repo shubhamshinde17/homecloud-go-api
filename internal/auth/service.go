@@ -96,7 +96,7 @@ func (s *Service) GetUserByAccessToken(accessToken string) (*User, error) {
 	claims, err := jwt.NewService(JWTSecret).ValidateToken(accessToken)
 	if err != nil {
 		logger.Error("Token validation error: ", err)
-		return nil, err
+		return nil, ErrInvalidCredentials
 	}
 	user, err := s.repo.FindByID(claims.UserID)
 	if err != nil {
