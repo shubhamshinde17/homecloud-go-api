@@ -22,15 +22,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", health.HealthHandler)
-	repo := auth.NewRepository(db)
-
-	service := auth.NewService(repo)
-
-	handler := auth.NewHandler(service)
-
-	mux.HandleFunc("/auth/signup", handler.SignupHandler)
-	mux.HandleFunc("/auth/login", handler.LoginHandler)
-	mux.HandleFunc("/auth/me", handler.GetUserHandler)
+	mux.Handle("/auth/", http.StripPrefix("/auth", auth.NewRouter(db)))
 
 	addr := ":8080"
 	log.Printf("starting server on %s", addr)
