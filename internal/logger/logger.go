@@ -9,3 +9,11 @@ func Info(msg string) {
 func Error(msg string, err error) {
 	log.Printf("[ERROR] %s: %v", msg, err)
 }
+
+func Debug(msg string) {
+	log.Printf("[DEBUG] %s", msg)
+}
+
+func Warning(msg string) {
+	log.Printf("[WARNING] %s", msg)
+}

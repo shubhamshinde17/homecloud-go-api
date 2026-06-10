@@ -21,13 +21,12 @@ func NewAccessTokenResponse(accessToken string, expiresIn int, refreshToken stri
 }
 
 func NewErrorResponse(message string) Response[any, any] {
-	return Response[any, any]{
-		Success:   false,
-		Message:   message,
-		Timestamp: time.Now(),
-		Data:      nil,
-		Meta:      nil,
-	}
+	return NewResponse(
+		false,
+		message,
+		nil,
+		nil,
+	)
 }
 
 type Response[T any, U any] struct {

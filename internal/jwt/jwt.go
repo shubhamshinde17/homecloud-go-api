@@ -5,7 +5,10 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/homecloud/go-api/internal/config"
 )
+
+var JWTSecret = config.LoadConfig().JWTSecret
 
 type Claims struct {
 	UserID int64  `json:"userId"`
@@ -17,9 +20,9 @@ type Service struct {
 	secret string
 }
 
-func NewService(secret string) *Service {
+func NewService() *Service {
 	return &Service{
-		secret: secret,
+		secret: JWTSecret,
 	}
 }
 
