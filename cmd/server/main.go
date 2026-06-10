@@ -29,6 +29,8 @@ func main() {
 	handler := auth.NewHandler(service)
 
 	mux.HandleFunc("/auth/signup", handler.SignupHandler)
+	mux.HandleFunc("/auth/login", handler.LoginHandler)
+	mux.HandleFunc("/auth/me", handler.GetUserHandler)
 
 	addr := ":8080"
 	log.Printf("starting server on %s", addr)
