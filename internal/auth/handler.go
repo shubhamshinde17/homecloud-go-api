@@ -91,18 +91,26 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	loginResponse, err := h.service.Login(&req)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		if errors.Is(err, ErrInvalidCredentials) {
+		switch {
+		case errors.Is(err, ErrUserNotFound):
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(common.NewErrorResponse(
+				"User not found",
+			))
+			return
+		case errors.Is(err, ErrInvalidCredentials):
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(common.NewErrorResponse(
 				"Invalid email or password",
 			))
 			return
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(common.NewErrorResponse(
+				"Internal Server Error",
+			))
+			return
 		}
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(common.NewErrorResponse(
-			"Internal Server Error",
-		))
-		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
